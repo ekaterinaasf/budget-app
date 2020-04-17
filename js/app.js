@@ -60,8 +60,8 @@ class UI {
       }, 3000);
     } else {
       let amount = parseInt(amountValue);
-      this.expenseInput = "";
-      this.amountInput = "";
+      this.expenseInput.value = "";
+      this.amountInput.value = "";
       let expense = {
         id: this.itemID,
         title: expenseValue,
@@ -70,7 +70,7 @@ class UI {
       this.itemID++;
       this.itemList.push(expense);
       this.addExpense(expense);
-      //this.showBalance();
+      this.showBalance();
     }
   }
 
@@ -96,8 +96,49 @@ class UI {
   }
 
   totalExpense() {
-    let total = 400; //correct this afterwards
+    let total = 0; //correct this afterwards
+    if (this.itemList.length > 0) {
+      total = this.itemList.reduce(function (acc, curr) {
+        acc += curr.amount;
+        return acc;
+      }, 0);
+    }
+    this.expenseAmount.textContent = total;
     return total;
+  }
+
+  editExpense(element) {
+    //we use parent element, because we need to be sure that this element is really deleted
+    //and for this case we need to check inside the parent element
+    let id = parseInt(element.dataset.id);
+    let parent = element.parentElement.parentElement.parentElement;
+    //remove from DOM
+    this.expenseList.removeChild(parent);
+    //remove from list
+    let expense = this.itemList.filter(function (item) {
+      return item.id === id; //filter returns a new array, so we should operate 0 item
+    });
+    //show value
+    this.expenseInput.value = expense[0].title;
+    this.amountInput.value = expense[0].amount;
+    let tempList = this.itemList.filter(function (item) {
+      return item.id !== id; //take all the rest except this deleted item
+    });
+    this.itemList = tempList;
+    this.showBalance();
+  }
+
+  deleteExpense(element) {
+    let id = parseInt(element.dataset.id);
+    let parent = element.parentElement.parentElement.parentElement;
+    //remove from DOM
+    this.expenseList.removeChild(parent);
+    //remove from list
+    let tempList = this.itemList.filter(function (item) {
+      return item.id !== id; //take all the rest except this deleted item
+    });
+    this.itemList = tempList;
+    this.showBalance();
   }
 }
 
@@ -123,7 +164,11 @@ function eventListeners() {
 
   // expense list click
   expenseList.addEventListener("click", function (event) {
-    event.preventDefault();
+    if (event.target.parentElement.classList.contains("edit-icon")) {
+      ui.editExpense(event.target.parentElement);
+    } else if (event.target.parentElement.classList.contains("delete-icon")) {
+      ui.deleteExpense(event.target.parentElement);
+    }
   });
 }
 
