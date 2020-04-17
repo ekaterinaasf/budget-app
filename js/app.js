@@ -15,6 +15,22 @@ class UI {
     this.itemList = [];
     this.itemID = 0;
   }
+
+  submitBudgetForm() {
+    const value = this.budgetForm.value;
+    if (value === 0 || value < 0) {
+      this.budgetFeedback.classList.add("Show Item");
+      this.budgetFeedback.innerHTML = "<p>value is invalid</p>";
+      const self = this;
+      setTimeout(function () {
+        self.budgetFeedback.classList.remove("Show Item");
+      }, 3000);
+    } else {
+      this.budgetAmount.textContent = value;
+      this.budgetInput.value = "";
+      this.showBalance();
+    }
+  }
 }
 
 function eventListeners() {
