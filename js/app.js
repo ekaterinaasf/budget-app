@@ -31,6 +31,10 @@ class UI {
       this.showBalance();
     }
   }
+
+  showBalance() {
+    const expense = this.totalExpense();
+  }
 }
 
 function eventListeners() {
